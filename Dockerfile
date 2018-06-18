@@ -5,9 +5,9 @@
 ###############################################################################################
 FROM openjdk:10-jre
 
-RUN apt-get -y install tomcat9 \
-    && echo "JAVA_HOME=/usr/lib/jvm/java-10-openjdk-amd64" >> /etc/default/tomcat9
+RUN apt-get -y install tomcat8 \
+    && echo "JAVA_HOME=/usr/lib/jvm/java-10-openjdk-amd64" >> /etc/default/tomcat8
 
 EXPOSE 8080
 
-CMD ["service tomcat9 start && tail -f /var/lib/tomcat9/logs/catalina.out"]
+CMD ["service tomcat9 start && tail -f /var/lib/tomcat8/logs/catalina.out"]
