@@ -23,11 +23,10 @@ build:
       - image_cache
 
 # Perform security scan with clair
-security-scan:
+container_scanning:
   stage: test
   script:
     - docker load -i image_cache/cached_image.tar
-    - docker image ls
     - docker run -d --name db arminc/clair-db:latest
     - docker run -p 6060:6060 --link db:postgres -d --name clair --restart on-failure arminc/clair-local-scan:v2.0.1
     - wget https://github.com/arminc/clair-scanner/releases/download/v8/clair-scanner_linux_amd64
