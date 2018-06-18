@@ -5,7 +5,7 @@
 ###############################################################################################
 FROM openjdk:10-jre
 
-RUN apt-get -y install tomcat9 
+RUN apt-get -y install tomcat9 \
     && echo "JAVA_HOME=/usr/lib/jvm/java-10-openjdk-amd64" >> /etc/default/tomcat9
 
 EXPOSE 8080
