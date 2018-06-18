@@ -5,9 +5,8 @@ services:
 
 variables:
   CI_APPLICATION_REPOSITORY: "apmregistry.azurecr.io"
-  CI_APPLICATION_TAG: $CI_COMMIT_SHA
   CI_APPLICATION_NAME: "tomcat-security-scanned"
-  CI_DOCKER_IMAGE_NAME: ${CI_APPLICATION_REPOSITORY}/${CI_APPLICATION_NAME}:${CI_APPLICATION_TAG}
+  CI_DOCKER_IMAGE_NAME: ${CI_APPLICATION_REPOSITORY}/${CI_APPLICATION_NAME}:$CI_COMMIT_SHA
 
 stages:
   - build
@@ -44,6 +43,23 @@ clair_scanning:
   artifacts:    
     paths: [gl-container-scanning-report.json, image_cache]
 
+# Perform some dagda scan
+dagda_scanning:
+  stage: test
+  script:
+    - docker pull mongo
+    - docker run -d -p 27017:27017 mongo
+    - export DAGDA_PORT=5000
+    - export DAGDA_HOST='127.0.0.1'
+    - export VULNDB_HOST='127.0.0.1'
+    - export VULNDB_PORT=27017
+    - docker run -p $DAGDA_PORT:$DAGDA_PORT \
+                     -v /var/run/docker.sock:/var/run/docker.sock:ro \
+                     -v /tmp:/tmp:ro \ 
+                     dagda:0.7.0 start -s $DAGDA_HOST -p $DAGDA_PORT \
+                                       -m $VULNDB_HOST -mp $VULNDB_PORT
+    - docker run -e DAGDA_HOST=$DAGDA_HOST -e DAGDA_PORT=$DAGDA_PORT \
+              dagda:0.7.0 vuln --init_status
 # Deploy to registry
 container_deploy:
   stage: deploy
