@@ -4,7 +4,7 @@ services:
   - docker:stable-dind
 
 variables:
-  CI_APPLICATION_REPOSITORY: "registry.gitlab.com/aroth/docker-security-scanning"
+  CI_APPLICATION_REPOSITORY: "apmregistry.azurecr.io"
   CI_APPLICATION_TAG: $CI_COMMIT_SHA
   CI_APPLICATION_NAME: "tomcat-security-scanned"
 
@@ -47,5 +47,5 @@ container_deploy:
   stage: deploy
   script:
     - docker load -i image_cache/cached_image.tar
-    - docker login registry.gitlab.com -u ${REGISTRY_USER} -p ${REGISTRY_TOKEN}
+    - docker login apmregistry.azurecr.io -u ${REGISTRY_USER} -p ${REGISTRY_TOKEN}
     - docker push ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_NAME}-${CI_APPLICATION_TAG} 
