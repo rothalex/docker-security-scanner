@@ -16,7 +16,7 @@ RUN apt-get install -y curl \
 
 # Install Tomcat 
 RUN cd /tmp \
-  && curl -O http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v8.5.5/bin/apache-tomcat-8.5.5.tar.gz \
+  && curl -O http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v8.5.31/bin/apache-tomcat-8.5.31.tar.gz \
   && mkdir /opt/tomcat \
   && tar xzvf apache-tomcat-8*tar.gz -C /opt/tomcat --strip-components=1 \
   && cd /opt/tomcat \
@@ -25,7 +25,7 @@ RUN cd /tmp \
   && chmod g+x conf \
   && chown -R tomcat webapps/ work/ temp/ logs/
 
-ENV JAVA_HOME /usr/lib/jvm/java-10.0.1-openjdk-amd64/jre
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/jre
 ENV PATH ${PATH}:${JAVA_HOME}/bin
 ENV CATALINA_HOME /opt/tomcat
 
