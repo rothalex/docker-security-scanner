@@ -4,12 +4,14 @@ services:
   - docker:stable-dind
 
 variables:
-  CI_APPLICATION_REPOSITORY: "apm-docker"
+  CI_APPLICATION_REPOSITORY: "registry.gitlab.com/aroth/docker-security-scanning"
   CI_APPLICATION_TAG: $CI_COMMIT_SHA
   CI_APPLICATION_NAME: "tomcat-security-scanned"
+
 stages:
   - build
   - test
+  - deploy
 
 ## Build a docker container and pass it to the next stage
 build:
@@ -40,3 +42,9 @@ container_scanning:
     - ./clair-scanner -c http://docker:6060 --ip $(hostname -i) -r gl-container-scanning-report.json -l clair.log -w clair-whitelist.yml ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_NAME}-${CI_APPLICATION_TAG} || true
   artifacts:
     paths: [gl-container-scanning-report.json]
+
+container_deploy:
+  stage: deploy
+  script:
+    - docker login registry.example.com -u ${REGISTRY_USER} -p ${REGISTRY_TOKEN}
+    - docker push ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_NAME}-${CI_APPLICATION_TAG} 
