@@ -6,7 +6,7 @@
 FROM ubuntu:18.04
 
 RUN apt-get update \
-  && apt-get install curl
+  && apt-get install -y curl
 
 # Java Version
 ENV JAVA_VERSION_MAJOR 8
