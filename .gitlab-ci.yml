@@ -46,7 +46,8 @@ clair_scanning:
 docker_bench_scanning:
   stage: test
   script:
-    - docker run --net host --pid host --cap-add audit_control -v /var/lib:/var/lib -v /var/run/docker.sock:/var/run/docker.sock -v /usr/lib/systemd:/usr/lib/systemd -v /etc:/etc --label docker_bench_security     docker/docker-bench-security
+    - apt-get install -y git
+    - docker run --net host --pid host --cap-add audit_control -v /var/lib:/var/lib -v /var/run/docker.sock:/var/run/docker.sock -v /usr/lib/systemd:/usr/lib/systemd -v /etc:/etc --label docker_bench_security docker/docker-bench-security
     - git clone https://github.com/docker/docker-bench-security.git 
     - cd docker-bench-security 
     - sh docker-bench-security.sh
