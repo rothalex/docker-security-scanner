@@ -53,13 +53,13 @@ dagda_scanning:
     - export DAGDA_HOST='127.0.0.1'
     - export VULNDB_HOST='127.0.0.1'
     - export VULNDB_PORT=27017
-    - docker run -p $DAGDA_PORT:$DAGDA_PORT \
-                     -v /var/run/docker.sock:/var/run/docker.sock:ro \
-                     -v /tmp:/tmp:ro \ 
-                     dagda:0.7.0 start -s $DAGDA_HOST -p $DAGDA_PORT \
-                                       -m $VULNDB_HOST -mp $VULNDB_PORT
-    - docker run -e DAGDA_HOST=$DAGDA_HOST -e DAGDA_PORT=$DAGDA_PORT \
-              dagda:0.7.0 vuln --init_status
+    - docker run -p $DAGDA_PORT:$DAGDA_PORT -v /var/run/docker.sock:/var/run/docker.sock:ro -v /tmp:/tmp:ro 3grander/dagda:0.7.0 start -s $DAGDA_HOST -p $DAGDA_PORT -m $VULNDB_HOST -mp $VULNDB_PORT
+    - docker run -e DAGDA_HOST=$DAGDA_HOST -e DAGDA_PORT=$DAGDA_PORT 3grander/dagda:0.7.0 vuln --init_status
+    - docker run -e DAGDA_HOST=$DAGDA_HOST -e DAGDA_PORT=$DAGDA_PORT 3grander/dagda:0.7.0 check --docker_umage ${CI_DOCKER_IMAGE_NAME} 
+  artifacts:    
+    paths: 
+      - image_cache
+
 # Deploy to registry
 container_deploy:
   stage: deploy
