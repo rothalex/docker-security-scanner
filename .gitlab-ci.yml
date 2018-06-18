@@ -43,14 +43,13 @@ clair_scanning:
   artifacts:    
     paths: [gl-container-scanning-report.json, image_cache]
 
-docker_bench_scanning:
+dagda_scanning:
   stage: test
+  image: i4slabs/dagda
   script:
-    - apk update && apk add --no-cache git iproute2
-    - docker run --net host --pid host --cap-add audit_control -v /var/lib:/var/lib -v /var/run/docker.sock:/var/run/docker.sock -v /usr/lib/systemd:/usr/lib/systemd -v /etc:/etc --label docker_bench_security docker/docker-bench-security
-    - git clone https://github.com/docker/docker-bench-security.git 
-    - cd docker-bench-security 
-    - sh docker-bench-security.sh
+    - python3 dagda.py vuln --init
+    - python3 dagda.py vuln --product openldap --product_version 2.2.20
+    - python dagda.py --docker_image ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_NAME}-${CI_APPLICATION_TAG}
   artifacts:    
     paths: [image_cache]
 
