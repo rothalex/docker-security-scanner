@@ -5,8 +5,6 @@
 ###############################################################################################
 FROM ubuntu:18.04
 
-RUN apt-get install -y curl
-
 # Java Version
 ENV JAVA_VERSION_MAJOR 8
 ENV JAVA_VERSION_MINOR 25
