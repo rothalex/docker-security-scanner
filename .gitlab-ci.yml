@@ -4,7 +4,7 @@ services:
   - docker:stable-dind
 
 variables:
-  CI_APPLICATION_REPOSITORY: "registry.gitlab.com/aroth/docker-security-scanning"
+  CI_APPLICATION_REPOSITORY: "apmregistry.azurecr.io"
   CI_APPLICATION_TAG: $CI_COMMIT_SHA
   CI_APPLICATION_NAME: "tomcat-security-scanned"
 
@@ -43,9 +43,10 @@ clair_scanning:
   artifacts:    
     paths: [gl-container-scanning-report.json, image_cache]
 
+# perform dagda security scan
 dagda_scanning:
   stage: test
-  image: 3grander/dagda
+  image: 3grander/dagda:0.7.0
   script:
     - docker pull mongo
     - docker run -d -p 27017:27017 mongo
@@ -68,6 +69,5 @@ container_deploy:
   stage: deploy
   script:
     - docker load -i image_cache/cached_image.tar
-    - docker login registry.gitlab.com -u ${REGISTRY_USER} -p ${REGISTRY_TOKEN}
-    ## deactivated push becaue of a bug in gitlab
-    #- docker push ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_NAME}-${CI_APPLICATION_TAG} 
+    - docker login apmregistry.azurecr.io -u ${REGISTRY_USER} -p ${REGISTRY_TOKEN}    
+    - docker push ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_NAME}-${CI_APPLICATION_TAG} 
