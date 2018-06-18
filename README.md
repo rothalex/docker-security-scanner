@@ -10,7 +10,7 @@ The goal of this sample project is to enable security scanning before pushing a 
 
 The first job is to build a docker image. 
 
-'''
+```
 ## Build a docker container and pass it to the next stage
 build:
   stage: build
@@ -21,13 +21,13 @@ build:
   artifacts:
     paths:
       - image_cache
-'''
+```
 
 In order to use caching and pass the created docker image to the next job, we create a new directory named "image_cache" and sage the created image. Note that this step is required, since we do not have access to /var/lib/docker. The resulting image is stored in image_cache/cached_image.tar
 
 Next, we start the container scanning job. The first task to be done is to load the docker image that has been cached from the build job. Afterwards, we start the clair-scanner. 
 
-'''
+```
 # Perform security scan with clair
 container_scanning:
   stage: test
@@ -46,9 +46,10 @@ container_scanning:
     - ./clair-scanner -c http://docker:6060 --ip $(hostname -i) -r gl-container-scanning-report.json -l clair.log -w clair-whitelist.yml ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_NAME}-${CI_APPLICATION_TAG} || true
   artifacts:
     paths: [gl-container-scanning-report.json]
-'''
+```
 
 The final result of the scan is presented in the job. 
-[](images/Clair-Scanner-Result.PNG)
+![](images/Clair-Scanner-Result.PNG)
 
-Note that it is possible to integrate the results in Gitlab merge requests. For more information on how to use this tool see: [Clair-Scanner Gitlab](https://docs.gitlab.com/ee/user/project/merge_requests/container_scanning.html)
+Note that it is possible to integrate the results in Gitlab merge requests. For more information on how to use this tool see: 
+[Clair-Scanner Gitlab](https://docs.gitlab.com/ee/user/project/merge_requests/container_scanning.html)
