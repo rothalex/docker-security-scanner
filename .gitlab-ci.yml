@@ -48,7 +48,7 @@ anchore_scanning:
   stage: test
   script:
     - docker pull anchore/cli
-    - docker run -d -v /var/run/docker.sock:/var/run/docker.sock --name anchore anchore/cli:latest
+    - docker run -d -v /var/run/docker.sock:/var/run/docker.sock --name anchore anchore/cli
     - docker exec anchore anchore feeds sync
     - docker exec anchore anchore analyze --image ${CI_DOCKER_IMAGE_NAM} --dockerfile .
   artifacts:
