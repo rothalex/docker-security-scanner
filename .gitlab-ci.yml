@@ -47,10 +47,14 @@ clair_scanning:
 anchore_scanning:
   stage: test
   script:
-    - docker pull anchore/cli
-    - docker run -d -v /var/run/docker.sock:/var/run/docker.sock --name anchore anchore/cli
-    - docker exec anchore anchore feeds sync
-    - docker exec anchore anchore analyze --image ${CI_DOCKER_IMAGE_NAM} --dockerfile .
+    - apk add --no-cache curl
+    - curl -O https://raw.githubusercontent.com/anchore/anchore-engine/master/scripts/docker-compose/docker-compose.yaml
+    - docker-compose pull
+    - docker-compose up -d
+    #- docker pull anchore/cli
+    #- docker run -d -v /var/run/docker.sock:/var/run/docker.sock --name anchore anchore/cli
+    #- docker exec anchore anchore feeds sync
+    #- docker exec anchore anchore analyze --image ${CI_DOCKER_IMAGE_NAM} --dockerfile .
   artifacts:
     paths:
       - image_cache
