@@ -43,6 +43,18 @@ clair_scanning:
   artifacts:    
     paths: [gl-container-scanning-report.json, image_cache]
 
+# Perform Anchore Scanner 
+anchore_scanning:
+  stage: test
+  script:
+    - docker pull anchore/cli
+    - docker run -d -v /var/run/docker.sock:/var/run/docker.sock --name anchore anchore/cli:latest
+    - docker exec anchore anchore feeds sync
+    - docker exec anchore anchore analyze --image ${CI_DOCKER_IMAGE_NAM} --dockerfile .
+  artifacts:
+    paths:
+      - image_cache
+
 # Perform some dagda scan
 #dagda_scanning:
 #  stage: test
