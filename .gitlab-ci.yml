@@ -50,8 +50,10 @@ aqua_scan:
   stage: test
   script:
     - docker load -i image_cache/cached_image.tar
-    - chmod +x scan.sh
-    - MICROSCANNER_TOKEN=${AQUA_SEC_TOKEN} ./scan.sh ${CI_DOCKER_IMAGE_NAME} 
+    - apk add git bash --no-cache 
+    - git clone https://github.com/lukebond/microscanner-wrapper.git aquasec
+    - chmod +x aquasec/scan.sh
+    - MICROSCANNER_TOKEN=${AQUA_SEC_TOKEN} bash /aquasec/scan.sh ${CI_DOCKER_IMAGE_NAME} && if [ $? -eq 0 ]; then  echo OK else echo FAIL fi
 
 # Deploy to registry
 container_deploy:
