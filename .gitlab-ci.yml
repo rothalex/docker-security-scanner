@@ -45,6 +45,14 @@ clair_scanning:
   artifacts:    
     paths: [gl-container-scanning-report.json, image_cache]
 
+# Perform a security scan with aquasec microscanner
+aqua_scan:
+  stage: test
+  script:
+    - docker load -i image_cache/cached_image.tar
+    - chmod +x scan.sh
+    - MICROSCANNER_TOKEN=${AQUA_SEC_TOKEN} ./scan.sh ${CI_DOCKER_IMAGE_NAME} 
+
 # Deploy to registry
 container_deploy:
   stage: deploy
