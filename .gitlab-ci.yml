@@ -53,7 +53,7 @@ aqua_scan:
     - apk add git bash --no-cache 
     - git clone https://github.com/lukebond/microscanner-wrapper.git aquasec
     - chmod +x aquasec/scan.sh
-    - MICROSCANNER_TOKEN=${AQUA_SEC_TOKEN} bash /aquasec/scan.sh ${CI_DOCKER_IMAGE_NAME} 
+    - MICROSCANNER_TOKEN=${AQUA_SEC_TOKEN} bash aquasec/scan.sh ${CI_DOCKER_IMAGE_NAME} 
 
 # Deploy to registry
 container_deploy:
