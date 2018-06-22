@@ -87,4 +87,4 @@ sed -n '/vulnerability_summary/,/^}/ { x; /^$/! p; }' result.txt
 
 The result of the scan is shown below:
 
-![](images/Aquascan-Result.PNG)
+![](images/Aquascan-Result.png)
