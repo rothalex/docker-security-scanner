@@ -1,8 +1,10 @@
 # Description
 
-This sample project demonstrates how to use Clair and Dagda to scan your docker containers before deployment. It uses the GitLab CI/CD pipeline to build, scan, and deploy a tomcat docker container. Note that the tomcat container is only for testing purposes. No production ready container. 
+This sample project demonstrates how to use Clair and AquaSec to scan your docker containers before deployment. It uses the GitLab CI/CD pipeline to build, scan, and deploy a minimal tomcat docker container. Note that the tomcat container is only for testing purposes. No production ready container!
 
 Clair and clair-scanner are tools to check Docker images for known vulnerabilities. Both are open source and aim for static analysis of containers. For more information on both see: [Clair](https://github.com/coreos/clair) and [Clair-Scanner](https://github.com/arminc/clair-scanner).
+
+AquaSec microscanner is a similar software to scan docker images during creation. More information can be found here: [AquaSec Microscanner](https://github.com/aquasecurity/microscanner). Rather than scanning the image after it has been build (as done by Clair), the microscanner needs to be defined within your Dockerfile and is executed during docker image build. Clearly, the new created docker image should not be deployed but is only used for scanning purposes and can be dropped afterwards. 
 
 # Gitlab-CI 
 
@@ -24,6 +26,8 @@ build:
 ```
 
 In order to use caching and pass the created docker image to the next job, we create a new directory named "image_cache" and sage the created image. Note that this step is required, since we do not have access to /var/lib/docker. The resulting image is stored in image_cache/cached_image.tar
+
+## Clair Scanning
 
 Next, we start the container scanning job. The first task to be done is to load the docker image that has been cached from the build job. Afterwards, we start the clair-scanner. 
 
@@ -53,3 +57,34 @@ The final result of the scan is presented in the job.
 
 Note that it is possible to integrate the results in Gitlab merge requests. For more information on how to use this tool see: 
 [Clair-Scanner Gitlab](https://docs.gitlab.com/ee/user/project/merge_requests/container_scanning.html)
+
+## AquaSec Scanning
+To run the AquaSec Microscanner on an already build docker image, we have to create a new docker image with a new layer containing the microscanner. Rather than doing this manually, we reuse the microscanner wrapper that provides such functionality. It can be found here [Microscanner-Wrapper](https://github.com/lukebond/microscanner-wrapper). Hence, in our job we simply need to download the wrapper and execute it as follows: 
+
+```
+# Perform a security scan with aquasec microscanner
+aqua_scan:
+  stage: test
+  script:
+    - docker load -i image_cache/cached_image.tar
+    - apk add git bash --no-cache 
+    - git clone https://github.com/lukebond/microscanner-wrapper.git aquasec
+    - chmod +x aquasec/scan.sh
+    - bash scan.sh
+```
+
+Note that before using the microscanner, you have to acquire a token. Ensure that this token is not used in plain text in your build scripts. Better use GitLab secret variables. 
+
+The scanning result will contain a list of vulnerabilities, a scanning summary, and some descriptions. Moreover, it also contains your aquasec scanner token, which is unfortunately not a good practice. Hence, the scanner call is encapsulated in the scan.sh script to only show the scanning result:
+
+```
+#!/bin/bash
+
+MICROSCANNER_TOKEN=${AQUA_SEC_TOKEN} bash aquasec/scan.sh ${CI_DOCKER_IMAGE_NAME} > result.txt
+
+sed -n '/vulnerability_summary/,/^}/ { x; /^$/! p; }' result.txt
+```
+
+The result of the scan is shown below:
+
+![](images/Aquascan-Result.PNG)
